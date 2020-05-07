@@ -14,12 +14,13 @@ public class CarController : MonoBehaviour
     public float maxSteer = 30f;                      //this will contain the angle that the 2 front wheels rotate left or right. 
     public Transform CM;                              //this makes the transform of the car into a variable called  CM. This will be a empty object placed on the car that will be center of mass.
     public Rigidbody rb;                              //Rigidbody of the car will be called rb
-    
+    public Vector3 turbo;
+    public Vector3 jump;
 
     // Start is called before the first frame update
     void Start()
     {
-        input = GetComponent<InputManager>();      //i believe this is to make sure the input variable is the InputManager script.
+        input = GetComponent<InputManager>();      //this applys a name to the InputManager script.
         rb = GetComponent<Rigidbody>();            //this makes sure rb is the car Rigidbody.
             if (CM)                                
             {
@@ -33,7 +34,7 @@ public class CarController : MonoBehaviour
     {
         foreach (WheelCollider wheel in throttleWheels)                                                                                                 // foreach will apply script commands to each item in the list. the arguments tells it to find the WheelCollider(i named it "wheel" as a local variable that i can change) in the throttleWheels List.
         {
-            wheel.motorTorque = strengthCoefficient * Time.deltaTime * (input.throttle * input.turbo);                                                  //this sets the motorTorque of all 4 wheels to the strengthCoefficient of the car. * (input.throttle * input.turbo) input.throttle can only be 0 if "W" or "S" is NOT pressed. "W" will be 1 and "S" will be negative 1. input.turbo will only be 1 or the turboMultiplier float found in the InputManager script.
+            wheel.motorTorque = strengthCoefficient * Time.deltaTime * (input.throttle);                                                  //this sets the motorTorque of all 4 wheels to the strengthCoefficient of the car. * (input.throttle * input.turbo) input.throttle can only be 0 if "W" or "S" is NOT pressed. "W" will be 1 and "S" will be negative 1. input.turbo will only be 1 or the turboMultiplier float found in the InputManager script.
         }    //motorTorque is  command that applys torque to the wheels. a positive number will be forward and negative will be back.
         foreach (GameObject wheel in steerWheels)                                                                                                       //the objects in this list will be the empty objects the wheel meshes are parented to the local variable will be called "wheel"
         {
@@ -43,9 +44,13 @@ public class CarController : MonoBehaviour
 
         foreach (GameObject mesh in meshes)                                                                                                             // the meshes in this list is actually the empty objects that are parents to the wheel meshes
         {
-            mesh.transform.Rotate(0f,0f, rb.velocity.magnitude + (transform.InverseTransformDirection(rb.velocity).z *.5f) * (2f + Mathf.PI + 0.15f)) ; // this code sets the mesh.transform.Rotate of the wheel mesh on the z axis. this will make the wheels look like they are rolling.
+            mesh.transform.Rotate( rb.velocity.magnitude + (transform.InverseTransformDirection(rb.velocity).z * .5f ) * (2f + Mathf.PI + 0.15f),0f,0f) ; // this code sets the mesh.transform.Rotate of the wheel mesh on the z axis. this will make the wheels look like they are rolling.
                                                                                                                                                         // velocity of the car + (world space of the velocity converted into local space).z    .z gets only the z value * .5f * the wheels circumfrence. i have the .5f to slow down the wheel spinning. it didnt look right originally
         }
+        
+            rb.AddRelativeForce(rb.position + turbo * input.turbo * Time.deltaTime);
+            rb.AddRelativeForce(rb.position + jump * input.jump * Time.deltaTime);
+       
        
     }
 }
