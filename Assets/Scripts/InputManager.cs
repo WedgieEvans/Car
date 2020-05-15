@@ -10,11 +10,17 @@ public class InputManager : MonoBehaviour
     public float turbo = 0f;                     //this is the variable that the CarController script reads for. 
     public float turboMultiplier = 2f;           //this is the variable that changes the multiplier when the turbo key is pressed
     public float jump = 0f;
+    public bool lightToggle;
+    public bool brake;
     // Update is called once per frame
     void Update()
     {
         throttle = Input.GetAxis("Vertical");   //Input.GetAxis will only return 1 when "W" is pressed and -1 when "S" is pressed. Then apply it to the throttle float
         steer = Input.GetAxis("Horizontal");    // same thing as the the vertical input except for the the "A" and "D" keys. It applies the values to the steer float.
+
+        lightToggle = Input.GetKeyDown(KeyCode.L);
+
+        brake = Input.GetKey(KeyCode.X);
 
         if (Input.GetKey(KeyCode.LeftShift))    //This just checks if "LShift" is pressed
         {
@@ -24,15 +30,16 @@ public class InputManager : MonoBehaviour
         {
             turbo = 0f;
         }
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            jump = 1f;
+            jump = 1f;// yes i wanted to make my car jump. go speed racer go.
         }
 
         else
         {
             jump = 0f;
         }
+       
 
 
     }

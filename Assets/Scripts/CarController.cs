@@ -4,18 +4,23 @@ using UnityEngine;
 
 [RequireComponent(typeof(InputManager))]        //this tells the script that the InputManager script i made is required for this script to run
 [RequireComponent(typeof(Rigidbody))]           // this tells rigidbody is required is this script
+[RequireComponent(typeof(LightingManager))]
 public class CarController : MonoBehaviour
 {
     public InputManager input;                        // i make a variable for my InputManager script and name it input.
+    public UIManager uim;
     public List<WheelCollider> throttleWheels;        //a List contains multiple <WheelCollider> in one variale. i then name it throttleWheels as this will control the cars forward speed. the list will have all 4 of my wheel colliders in it
     public List<GameObject> steerWheels;              //this List will contain <GameObject> naming this variable steerWheels. this list will have 2 items. the 2 game objects are empty objects. the wheel meshes are parented to the empty objects. Empty objects i created have uniform transforms and there for be easier to control.
     public List<GameObject> meshes;                   // this list contain my wheel meshs in a list of 4. i name the list variable meshes
+    public LightingManager lm;
     public float strengthCoefficient = 20000f;        //this float is essentially how fast the car can go
     public float maxSteer = 30f;                      //this will contain the angle that the 2 front wheels rotate left or right. 
+    public float brakeStrength;
     public Transform CM;                              //this makes the transform of the car into a variable called  CM. This will be a empty object placed on the car that will be center of mass.
     public Rigidbody rb;                              //Rigidbody of the car will be called rb
     public Vector3 turbo;
     public Vector3 jump;
+    public List <GameObject> tailLights;
 
     // Start is called before the first frame update
     void Start()
@@ -29,13 +34,49 @@ public class CarController : MonoBehaviour
             
     }
 
+         void Update()
+    {
+        if (input.lightToggle)
+        {
+            lm.ToggleHeadlights();
+        }
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            lm.ToggleBreakLights();
+        }
+        else if (Input.GetKeyUp(KeyCode.X))
+        {
+            lm.ToggleBreakLights();
+        }
+
+        uim.changeText(transform.InverseTransformVector(rb.velocity).z);
+
+    //    foreach (GameObject tl in tailLights)
+    //  {
+    //      tl.GetComponent<Renderer>().material.SetColor("EmissionColor", input.brake ? new Color(0.5f, 0.111f, 0.111f): Color.black);
+    //  }
+    }
+
     // Update is called once per frame
     void FixedUpdate()          //Fixed Updates are better for physics 
     {
         foreach (WheelCollider wheel in throttleWheels)                                                                                                 // foreach will apply script commands to each item in the list. the arguments tells it to find the WheelCollider(i named it "wheel" as a local variable that i can change) in the throttleWheels List.
         {
-            wheel.motorTorque = strengthCoefficient * Time.deltaTime * (input.throttle);                                                  //this sets the motorTorque of all 4 wheels to the strengthCoefficient of the car. * (input.throttle * input.turbo) input.throttle can only be 0 if "W" or "S" is NOT pressed. "W" will be 1 and "S" will be negative 1. input.turbo will only be 1 or the turboMultiplier float found in the InputManager script.
-        }    //motorTorque is  command that applys torque to the wheels. a positive number will be forward and negative will be back.
+            if (input.brake)
+            {
+                wheel.motorTorque = 0f;
+                wheel.brakeTorque = brakeStrength *Time.deltaTime;
+            }
+            else
+            {
+                wheel.motorTorque = strengthCoefficient * Time.deltaTime * (input.throttle);                                                  //this sets the motorTorque of all 4 wheels to the strengthCoefficient of the car. * (input.throttle * input.turbo) input.throttle can only be 0 if "W" or "S" is NOT pressed. "W" will be 1 and "S" will be negative 1. input.turbo will only be 1 or the turboMultiplier float found in the InputManager script.
+                //motorTorque is  command that applys torque to the wheels. a positive number will be forward and negative will be back.
+                wheel.brakeTorque = 0f;
+             }
+ }
+           
+               
         foreach (GameObject wheel in steerWheels)                                                                                                       //the objects in this list will be the empty objects the wheel meshes are parented to the local variable will be called "wheel"
         {
             wheel.GetComponent<WheelCollider>().steerAngle = maxSteer * input.steer;                                                                    //.steerAngle sets the steering angle in degrees only on the Y axis. = to maxSteer float * input.steer 
