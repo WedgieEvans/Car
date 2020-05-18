@@ -6,7 +6,7 @@ public class LightingManager : MonoBehaviour
 {
     public List<Light> lights;
     //public List<GameObject> tailLights;
-    public List<Light> breakLights;
+    public List<Light> brakeLights;
 
     public virtual void ToggleHeadlights()
     {
@@ -16,9 +16,9 @@ public class LightingManager : MonoBehaviour
         }
 
     }
-    public virtual void ToggleBreakLights()
+    public virtual void ToggleBrakeLights()
     {
-        foreach (Light light in breakLights)
+        foreach (Light light in brakeLights)
         {
             light.intensity = light.intensity == 1 ? 3 : 1;
         }

@@ -43,11 +43,11 @@ public class CarController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.X))
         {
-            lm.ToggleBreakLights();
+            lm.ToggleBrakeLights();
         }
         else if (Input.GetKeyUp(KeyCode.X))
         {
-            lm.ToggleBreakLights();
+            lm.ToggleBrakeLights();
         }
 
         uim.changeText(transform.InverseTransformVector(rb.velocity).z);
